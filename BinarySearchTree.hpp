@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <queue>
 using namespace std;
 
 template <typename T> string toStr(const T &value) {
@@ -111,10 +112,55 @@ public:
   // Remove x from the tree. Nothing is done if x is not found.
   void remove(const Comparable &x) { remove(x, root); }
 
+
+
+  ////////////////////////////////////////////////////////////////////////////////////
+
+
+
   string BFT() const {
+    if (root == nullptr) return "Empty Tree";
+
     string st;
+    int childAmount;
+
+    std::queue <BinaryNode*> q;//use a queue to know how many nodes to print per height level
+
+    q.push(root);
+    st = st + "[";//to format as expected output
+
+
+    while (!q.empty())
+    {
+      childAmount = q.size();//Will control how many nodes are appended per level. (i.e. first run: size is 1 because is the only node, only put that one element in pair)
+      st = st + "[";
+
+
+      for(int i = 0; i < childAmount; i++)
+      {
+        BinaryNode * tmp = q.front();//convert q.front() to node so we can access their children
+        st = st + toStr(tmp->element);//puts node in str
+        q.pop();//remove the node
+
+        if (i + 1 < childAmount) st = st + ",";//to separate elements in a pair
+
+        if (tmp->left != nullptr)q.push(tmp->left);//push childrens to q if they exist. Left must go first
+        if (tmp->right != nullptr)q.push(tmp->right);
+      }
+      st = st + "]";
+
+      if (!q.empty()) st = st + ",";
+    }
+
+    st = st + "]";
+
+    
     return st;
   }
+
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////
 
 private:
   struct BinaryNode {
@@ -269,6 +315,18 @@ private:
       toInorderStr(t->right, st);
     }
   }
+
+/*
+  void BFS_Helper(BinaryNode *t, string &st) const{
+    if (t != nullptr)
+    {
+      st = "[" + toStr(t->element) + "]" + ",";//Imprime nodo padre y sus hijos
+      if (t-> left != nullptr)st =st + "[" + toStr(t->left->element)+ ",";
+      if (t-> right != nullptr)st = st + toStr(t->right->element) + "]" + ",";
+      st.pop_back();
+    }
+  }
+*/
 
   // Internal method to clone subtree.
   BinaryNode *clone(BinaryNode *t) const {
